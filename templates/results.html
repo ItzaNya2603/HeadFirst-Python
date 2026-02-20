@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block body %}
+
+<h2>{{ the_title }}</h2>
+
+<p>Buscaste estas letras: <b>{{ letras_buscadas }}</b></p>
+<p>En esta frase: <i>{{ frase_recibida }}</i></p>
+
+<h3>El resultado es: {{ resultado_final }}</h3>
+
+<br>
+<a href="/">Hacer otra búsqueda</a>
+
+{% endblock %}

@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block body %}
+
+<h2>{{ the_title }}</h2>
+
+<form method='POST' action='/search4'>
+    <table>
+        <tr>
+            <td>Frase a buscar:</td>
+            <td><input name='phrase' type='TEXT' width='30'></td>
+        </tr>
+        <tr>
+            <td>Letras a buscar:</td>
+            <td><input name='letters' type='TEXT' value='aeiou'></td>
+        </tr>
+    </table>
+    <p>Cuando estés listo, haz clic en este botón:</p>
+    <p><input value='¡Busca!' type='SUBMIT'></p>
+</form>
+
+{% endblock %}
