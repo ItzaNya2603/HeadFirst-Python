@@ -1,9 +1,6 @@
 {% extends 'base.html' %}
-
 {% block body %}
-
 <h2>{{ the_title }}</h2>
-
 <table>
     <tr>
         {% for title in the_row_titles %}
@@ -12,14 +9,12 @@
     </tr>
     {% for row in the_data %}
         <tr>
-            {% for item in row %}
-                <td>{{ item }}</td>
+            {% for cell in row %}
+                <td>{{ cell }}</td>
             {% endfor %}
         </tr>
     {% endfor %}
 </table>
-
 <br>
-<a href="/">Volver al buscador</a>
-
+<a href="/">Volver al inicio</a>
 {% endblock %}

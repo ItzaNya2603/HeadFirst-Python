@@ -2,7 +2,7 @@ from flask import Flask, render_template, request
 from vsearch import search4letters
 from DBcm import UseDatabase  # Biblioteca imporetada del cap 8
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder='../templates', static_folder='../static')
 
 # Configuración de la base de datos
 dbconfig = {
@@ -43,6 +43,21 @@ def do_search() -> str:
                            the_phrase=phrase,
                            the_letters=letters,
                            the_results=results,)
+
+@app.route('/viewlog')
+def view_the_log() -> 'html':
+    """Muestra el historial de búsquedas almacenado en la base de datos."""
+    with UseDatabase(dbconfig) as cursor:
+        _SQL = """select phrase, letters, ip, browser_string, results
+                  from log"""
+        cursor.execute(_SQL)
+        contents = cursor.fetchall()
+    
+    titles = ('Frase', 'Letras', 'Dirección IP', 'Navegador', 'Resultado')
+    return render_template('viewlog.html',
+                           the_title='Historial de Búsquedas',
+                           the_row_titles=titles,
+                           the_data=contents,)
 
 @app.route('/')
 @app.route('/entry')
