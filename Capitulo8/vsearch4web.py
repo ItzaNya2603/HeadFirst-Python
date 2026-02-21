@@ -8,15 +8,15 @@ app = Flask(__name__, template_folder='../templates', static_folder='../static')
 dbconfig = {
     'host': '127.0.0.1',
     'user': 'vsearch',
-    'password': 'vsearchpasswd',
+    'password': 'AkimiPichu26',
     'database': 'vsearchlogDB',
 }
 
 def log_request(req: 'flask_request', res: str) -> None:
-    """Registra los detalles de la consulta en la base de datos."""
+    # ...
     with UseDatabase(dbconfig) as cursor:
         _SQL = """insert into log
-                  (phrase, letters, ip, browser_string, results)
+                  (phrase, letters, ip, browser, results)  # Aquí decía browser_string
                   values
                   (%s, %s, %s, %s, %s)"""
         cursor.execute(_SQL, (req.form['phrase'],
@@ -46,10 +46,11 @@ def do_search() -> str:
 
 @app.route('/viewlog')
 def view_the_log() -> 'html':
-    """Muestra el historial de búsquedas almacenado en la base de datos."""
     with UseDatabase(dbconfig) as cursor:
-        _SQL = """select phrase, letters, ip, browser_string, results
-                  from log"""
+        # Agregamos ORDER BY id DESC al final
+        _SQL = """select phrase, letters, ip, browser, results
+                  from log
+                  order by id desc""" 
         cursor.execute(_SQL)
         contents = cursor.fetchall()
     
