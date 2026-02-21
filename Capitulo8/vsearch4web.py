@@ -13,16 +13,20 @@ dbconfig = {
 }
 
 def log_request(req: 'flask_request', res: str) -> None:
-    # ...
+    """Registra los detalles de la consulta en la base de datos."""
     with UseDatabase(dbconfig) as cursor:
         _SQL = """insert into log
-                  (phrase, letters, ip, browser, results)  # Aquí decía browser_string
+                  (phrase, letters, ip, browser, results)
                   values
                   (%s, %s, %s, %s, %s)"""
+        
+        # Este es el truco: si browser es None, usa 'Unknown'
+        browser_name = req.user_agent.browser or 'Unknown'
+        
         cursor.execute(_SQL, (req.form['phrase'],
                              req.form['letters'],
                              req.remote_addr,
-                             req.user_agent.browser,
+                             browser_name,  # Usamos la variable que acabamos de crear
                              res, ))
 
 @app.route('/search4', methods=['POST'])
@@ -46,15 +50,25 @@ def do_search() -> str:
 
 @app.route('/viewlog')
 def view_the_log() -> 'html':
+    """Muestra el historial incluyendo la fecha y hora."""
     with UseDatabase(dbconfig) as cursor:
-        # Agregamos ORDER BY id DESC al final
-        _SQL = """select phrase, letters, ip, browser, results
+        # Agregamos 'ts' al principio de la consulta
+        _SQL = """select ts, phrase, letters, ip, browser, results
                   from log
                   order by id desc""" 
         cursor.execute(_SQL)
         contents = cursor.fetchall()
     
-    titles = ('Frase', 'Letras', 'Dirección IP', 'Navegador', 'Resultado')
+    # Agregamos 'Fecha y Hora' a la lista de títulos
+    titles = ('Fecha y Hora', 'Frase', 'Letras', 'Dirección IP', 'Navegador', 'Resultado')
+    
+    return render_template('viewlog.html',
+                           the_title='Historial de Búsquedas',
+                           the_row_titles=titles,
+                           the_data=contents,)
+
+    # Agregamos 'Fecha/Hora' a los títulos
+    titles = ('Fecha/Hora', 'Frase', 'Letras', 'Dirección IP', 'Navegador', 'Resultado')
     return render_template('viewlog.html',
                            the_title='Historial de Búsquedas',
                            the_row_titles=titles,
